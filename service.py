@@ -41,13 +41,13 @@ class PropertiesUpdater(xbmc.Monitor):
 
 class AddonCheckUpdate:
 	def run(self):
-		xbmc.log('[ context.thor ]  Addon checking available updates', xbmc.LOGNOTICE)
+		xbmc.log('[ context.thor ]  Addon checking available updates', LOGNOTICE)
 		try:
 			import re
 			import requests
-			repo_xml = requests.get('https://raw.githubusercontent.com/aussiehulk/zips/master/addons.xml')
+			repo_xml = requests.get('https://raw.githubusercontent.com/aussiehulk/zips/master/context.thor/addon.xml')
 			if not repo_xml.status_code == 200:
-				xbmc.log('[ context.thor ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, xbmc.LOGNOTICE)
+				xbmc.log('[ context.thor ]  Could not connect to remote repo XML: status code = %s' % repo_xml.status_code, LOGNOTICE)
 				return
 			repo_version = re.findall(r'<addon id=\"context.thor\".+version=\"(\d*.\d*.\d*)\"', repo_xml.text)[0]
 			local_version = xbmcaddon.Addon('context.thor').getAddonInfo('version')[:5] # 5 char max so pre-releases do try to compare more chars than github version

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="context.thor" version="1.2.1" name="Thor - Global Context Menu Items" provider-name="Thor">
+<addon id="context.thor" name="Thor - Global Context Menu Items" provider-name="Thor" version="1.1.9">
 	<requires>
 		<import addon="script.module.requests" version="2.19.1" />
 	</requires>
@@ -27,9 +27,10 @@
 				<visible>
 					[!String.IsEmpty(Window(home).Property(context.thor.clearProviders)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.thor/?action=play) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]] |
-					[String.Contains(Container.FolderPath,videodb://) + String.Contains(Container.ListItem.Path,plugin.video.thor) +
+					[String.Contains(Container.FolderPath,videodb://) +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(thor.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(thor.tvLib.path))] +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]]
 				</visible>
 			</item>
@@ -38,7 +39,7 @@
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.thor.clearBookmark)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.thor/?action=play) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					ListItem.IsResumable +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
@@ -48,8 +49,16 @@
 				<visible>
 					[!String.IsEmpty(Window(home).Property(context.thor.rescrape)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.thor/?action=play) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]]
+				</visible>
+			</item>
+			<item library="libRescrape.py">
+				<label>[B][COLOR red]Thor[/COLOR][/B] - Rescrape Lib Item</label>
+				<visible>
+					String.Contains(Container.FolderPath,videodb://) +
+					[String.Contains(Container.ListItem.Path,Window(home).Property(thor.movieLib.path)) | String.Contains(Container.ListItem.Path,Window(home).Property(thor.tvLib.path))] +
+					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="playFromHere.py">
@@ -57,27 +66,27 @@
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.thor.playFromHere)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.thor/) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					String.IsEqual(ListItem.dbtype,episode)
 				</visible>
 			</item>
 			<item library="autoPlay.py">
 				<label>[B][COLOR red]Thor[/COLOR][/B] - Auto Play</label>
 				<visible>
-					String.IsEmpty(Window(home).Property(plugin.video.thor.autoPlay)) +
+					String.IsEmpty(Window(home).Property(thor.autoPlay.enabled)) +
 					!String.IsEmpty(Window(home).Property(context.thor.autoPlay)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.thor/?action=play) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
 			<item library="sourceSelect.py">
 				<label>[B][COLOR red]Thor[/COLOR][/B] - Source Select</label>
 				<visible>
-					!String.IsEmpty(Window(home).Property(plugin.video.thor.autoPlay)) +
+					!String.IsEmpty(Window(home).Property(thor.autoPlay.enabled)) +
 					!String.IsEmpty(Window(home).Property(context.thor.sourceSelect)) +
 					String.StartsWith(ListItem.FolderPath,plugin://plugin.video.thor/?action=play) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					[String.IsEqual(ListItem.dbtype,episode) | String.IsEqual(ListItem.dbtype,movie)]
 				</visible>
 			</item>
@@ -104,17 +113,16 @@
 				<visible>
 					!String.IsEmpty(Window(home).Property(context.thor.browseEpisodes)) +
 					String.StartsWith(ListItem.path,plugin://plugin.video.thor/) +
-					String.IsEqual(ListItem.Property(isthor_widget),true) +
+					String.IsEqual(ListItem.Property(isThor_widget),true) +
 					String.IsEqual(ListItem.dbtype,episode)
 				</visible>
 			</item>
 		</menu>
-</extension>
+	</extension>
 	<extension point="xbmc.service" library="service.py" />
 	<extension point="xbmc.addon.metadata">
 		<summary lang="en">Thor - This Addon is currently in beta. Please be aware there may be bugs present</summary>
-		<description lang="en">Adds Global Contextual Menu Items for Thor menu items throughout Kodi
-		</description>
+		<description lang="en">Adds Global Contextual Menu Items for Thor menu items throughout Kodi</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
 		<forum></forum>
@@ -123,12 +131,12 @@
 		<disclaimer lang="en"></disclaimer>
 		<assets>
 			<icon>icon.png</icon>
-			<fanart>fanart.png</fanart>
+			<fanart>fanart.jpg</fanart>
+			<screenshot></screenshot>
 		</assets>
 		<news>
-[B][COLOR red]Update - v1.1.0 - Oct. 05, 2020[/COLOR][/B]
-[COLOR yellow]--[/COLOR][I] "Clear Providers" is now availble for Library Items via context menu for
-    items added from the Thor addon.[/I]
+[B][COLOR red]Update - v1.1.9 - June 12, 2021[/COLOR][/B]
+[COLOR yellow]--[/COLOR][I] "Trakt Manager" updated for changed to Thor addon.[/I]
 		</news>
 	</extension>
 </addon>

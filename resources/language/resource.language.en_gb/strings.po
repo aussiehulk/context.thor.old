@@ -1,7 +1,7 @@
 # Kodi Media Center language file
 # Addon Name: Thor - Global Context Menu Items
 # Addon id: context.thor
-# Addon Provider: aussiehulk
+# Addon Provider: Aussiehulk
 msgid ""
 msgstr ""
 
